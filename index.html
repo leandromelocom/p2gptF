@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>TechResolve</title>
+</head>
+<body>
+  <div class="box-questions">
+    <div class="header">
+      <p>TechResolve</p>
+    </div>
+    <p id="status"></p>
+    <div id="history">
+    </div>
+    <div class="footer">
+      <input type="text" id="message-input" placeholder="Pergunte aqui...">
+      <button class="btn-submit" id="btn-submit" onclick="handleSendMessage()">Enviar</button>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    function handleSendMessage() {
+      const statusElement = document.getElementById('status');
+      const messageInput = document.getElementById('message-input');
+      const historyElement = document.getElementById('history');
+      const message = messageInput.value;
+
+      // Mostrar carregando
+      statusElement.innerText = 'Carregando...';
+
+      if (message) {
+        // Adicionar a mensagem enviada ao histórico
+        historyElement.innerHTML += '<div><strong>Você:</strong> ' + message + '</div>';
+
+        window.sendMessage(message)
+          .then(response => {
+            // Remover texto de carregamento
+            statusElement.innerText = '';
+
+            // Adicionar a resposta ao histórico
+            const responses = response.choices.map(choice => choice.message.content);
+            historyElement.innerHTML += '<div><strong>Resposta:</strong> ' + responses.join('<br>') + '</div>';
+
+            // Limpar o campo de entrada
+            messageInput.value = '';
+          })
+          .catch(error => {
+            // Mostrar erro e remover carregamento
+            statusElement.innerText = 'Erro ao enviar a mensagem: ' + error.message;
+          });
+      } else {
+        // Se não houver mensagem, remover carregamento e mostrar aviso
+        statusElement.innerText = 'Por favor, insira uma mensagem.';
+      }
+    }
+  </script>
+</body>
+</html>
